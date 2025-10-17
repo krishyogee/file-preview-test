@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Data & Notes</title>
+    <!-- Bootstrap CSS from CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+        body {
+            padding-top: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 900px;
+        }
+        .card {
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4 text-center">Employee Information Dashboard</h1>
+
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Notes Preview</h5>
+            </div>
+            <div class="card-body">
+                <div id="notes-preview" class="alert alert-info mb-0" role="alert">
+                    Loading notes...
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Employee Data</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="employee-table" class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <!-- Headers will be inserted here by JavaScript -->
+                        </thead>
+                        <tbody>
+                            <!-- Data rows will be inserted here by JavaScript -->
+                            <tr><td colspan="4" class="text-center text-muted">Loading employee data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Embedded CSV Data from sample_data.csv
+            const csvData = `name,age,city,salary
+John Doe,28,New York,75000
+Jane Smith,34,Los Angeles,82000
+Bob Johnson,45,Chicago,65000
+Alice Williams,29,Houston,71000
+Charlie Brown,38,Phoenix,68000
+David Lee,52,Philadelphia,95000
+Emma Davis,31,San Antonio,73000
+Frank Miller,41,San Diego,79000
+Grace Wilson,27,Dallas,67000
+Henry Moore,36,San Jose,88000`;
+
+            // Embedded Notes Data from notes.txt
+            const notesData = `Project Requirements Document
+=============================
+Version: 1.0
+Date: 2025-10-14
+Author: Test Team
+
+This is a sample text file for testing file preview functionality.
+The system should be able to read the first 5 lines of this file.
+Each line contains important information.
+Line 4: Testing proper line reading.
+Line 5: This should be the last line displayed in preview.
+Line 6: This line should NOT appear in the preview.
+Additional content follows but won't be visible in the initial preview.`;
+
+            // --- Parse CSV and display in table ---
+            const employeeTable = document.getElementById('employee-table');
+            if (employeeTable) {
+                try {
+                    const lines = csvData.trim().split('\n');
+                    if (lines.length > 1) { // At least header and one data row
+                        const headers = lines[0].split(',');
+                        const tableHead = employeeTable.querySelector('thead');
+                        const tableBody = employeeTable.querySelector('tbody');
+
+                        // Clear existing content
+                        tableHead.innerHTML = '';
+                        tableBody.innerHTML = '';
+
+                        // Create header row
+                        const headerRow = document.createElement('tr');
+                        headers.forEach(headerText => {
+                            const th = document.createElement('th');
+                            th.textContent = headerText.trim();
+                            headerRow.appendChild(th);
+                        });
+                        tableHead.appendChild(headerRow);
+
+                        // Populate table body
+                        for (let i = 1; i < lines.length; i++) {
+                            const rowData = lines[i].split(',');
+                            if (rowData.length === headers.length) { // Ensure consistent row data
+                                const tr = document.createElement('tr');
+                                rowData.forEach(cellData => {
+                                    const td = document.createElement('td');
+                                    td.textContent = cellData.trim();
+                                    tr.appendChild(td);
+                                });
+                                tableBody.appendChild(tr);
+                            }
+                        }
+                    } else {
+                        employeeTable.querySelector('tbody').innerHTML = '<tr><td colspan="4" class="text-muted">No employee data available.</td></tr>';
+                    }
+                } catch (error) {
+                    console.error("Error parsing CSV data:", error);
+                    employeeTable.querySelector('tbody').innerHTML = '<tr><td colspan="4" class="text-danger">Error loading employee data.</td></tr>';
+                }
+            } else {
+                console.error("Employee table element with id 'employee-table' not found.");
+            }
+
+            // --- Display first line of notes ---
+            const notesPreviewDiv = document.getElementById('notes-preview');
+            if (notesPreviewDiv) {
+                try {
+                    const notesLines = notesData.split('\n');
+                    if (notesLines.length > 0 && notesLines[0].trim() !== '') {
+                        notesPreviewDiv.textContent = notesLines[0].trim();
+                    } else {
+                        notesPreviewDiv.textContent = 'Notes file is empty or no first line found.';
+                    }
+                } catch (error) {
+                    console.error("Error processing notes data:", error);
+                    notesPreviewDiv.textContent = 'Error loading notes preview.';
+                    notesPreviewDiv.classList.remove('alert-info');
+                    notesPreviewDiv.classList.add('alert-danger');
+                }
+            } else {
+                console.error("Notes preview element with id 'notes-preview' not found.");
+            }
+        });
+    </script>
+</body>
+</html>
