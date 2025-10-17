@@ -1,3 +1,2 @@
-# file-preview-test
-
-Generated application for file-preview-test
+bash
+    git clone https://github.com/krishyogee/file-preview-test.git
